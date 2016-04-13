@@ -12,9 +12,11 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import norakomi.com.norakomifirebase.JSoup.ParseUrl;
 import norakomi.com.norakomifirebase.utils.App;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultView;
     private Button button;
     private FirebaseManager firebaseManager;
+    private ArrayList<String> urlsToCrawl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
                 "sovietart.me/posters/all/page1/3",
                 "sovietart.me/posters/all/page1/4",
                 "sovietart.me/posters/all/page1/1");
+        urlsToCrawl = new ArrayList<>();
+        urlsToCrawl.add(testList.get(0));
+        App.log(TAG, "url to crawl = " + urlsToCrawl.get(0));
 
         firebaseManager.writeToFirebase(Constants.childNodePages, testList);
         firebaseManager.readFromFirebase(Constants.childNodePages, new ValueEventListener() {
@@ -71,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
     protected void exampleArrayLike() {
@@ -98,10 +103,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public void buttonClicked(View view) {
-        String msg = "button clicked. Trying to load data from Json.";
+        String msg = "button clicked. Trying to load parse test data with JSoup.";
         App.log(TAG, msg);
+
+        for (String url : urlsToCrawl) {
+            new ParseUrl().execute(url);
+        }
+
+
         resultView.setText(resultView.getText() + "\n" + msg);
     }
 
