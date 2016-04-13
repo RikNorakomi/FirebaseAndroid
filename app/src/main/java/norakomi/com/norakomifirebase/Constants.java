@@ -8,6 +8,9 @@ public class Constants {
     public static final String FIREBASE_HOME = "https://dazzling-inferno-8912.firebaseio.com/";
     public static final String FIREBASE_BASE_PATH = "dazzling-inferno-8912";
 
+    // fire base object nodes
+    public static final String childNodePages = "soviet_art_me_pages";
+
 
     /* JSON URLs*/
     public static final String URL_JSON_SOVIET_ART_ME_POSTERS_PAGES = "http://www.norakomi.com/assets/json/soviet_art_me_poster_pages.json";
