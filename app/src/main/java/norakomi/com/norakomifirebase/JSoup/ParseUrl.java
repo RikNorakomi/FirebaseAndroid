@@ -1,13 +1,15 @@
 package norakomi.com.norakomifirebase.JSoup;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import norakomi.com.norakomifirebase.ArtWorkCrawler;
+import norakomi.com.norakomifirebase.UrlParsedCallback;
+import norakomi.com.norakomifirebase.models.SovietArtMePage;
 import norakomi.com.norakomifirebase.utils.App;
 import norakomi.com.norakomifirebase.utils.NetworkUtils;
 
@@ -18,18 +20,36 @@ import norakomi.com.norakomifirebase.utils.NetworkUtils;
  * https://github.com/RikNorakomi?tab=repositories
  * http://norakomi.blogspot.nl/
  * www.norakomi.com
+ *
+ *
+ * ParseUrl takes care of parsing a webpage by passing in a url to the AsyncTask.execute(url) method
+ * a websites data is return as a string to the doInBackground() method which then
+ * handles all the logic for what to parse into a result String.
+ * When parsing is done the result string is passed to onPostExecute().
+ *
  */
 public class ParseUrl extends AsyncTask<String, Void, String> {
 
     private final String TAG = getClass().getSimpleName();
+    private UrlParsedCallback callbackHandler;
+
+    public void setCallbackHandler(UrlParsedCallback callbackHandler){
+        this.callbackHandler = callbackHandler;
+    }
 
     @Override
     protected String doInBackground(String... strings) {
+        if (callbackHandler == null){
+            App.log(TAG, "Error. CallbackHandler needs to be set before executing url parse!");
+            return "";
+        }
+
         StringBuilder buffer = new StringBuilder();
         String url = strings[0];
 
         if (url == null) {
             App.log(TAG, "Error. Not a valid url");
+            callbackHandler.onError("Not a valid url");
             return buffer.toString();
         }
 
@@ -50,7 +70,31 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
             App.log(TAG, "Trying to connecting to: " + url);
             Document doc = Jsoup.connect(url).get();
 
-            Log.d(TAG, "Connected to: " + url);
+            if (doc == null){
+                /*
+                * If get request somehow returns null without throwing an exception an
+                * empty string is returned
+                * */
+                App.log(TAG,"Error: Unable to get a Document from url: " + url);
+                return buffer.toString();
+            } else {
+                ArtWorkCrawler crawler = new ArtWorkCrawler();
+                crawler.process(doc);
+
+                SovietArtMePage sovietArtMePage = new SovietArtMePage();
+                sovietArtMePage.setUrl(url);
+                sovietArtMePage.setTitle(crawler.getTitle());
+                sovietArtMePage.setYear(crawler.getYear());
+                sovietArtMePage.setAuthor(crawler.getAuthor());
+                sovietArtMePage.setCategory(crawler.getCategory());
+                sovietArtMePage.setImageInfo(crawler.getImageInfo());
+
+                callbackHandler.onWebPageParsed(sovietArtMePage);
+
+            }
+
+            // todo remove test code below and see what to do with on postExecute
+            App.log(TAG, "Connected to: " + url);
 
             // Get document (HTML page) title
             String title = doc.title();
@@ -81,9 +125,9 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
         return buffer.toString();
     }
 
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        App.log(TAG, "onPostExecute: " + s);
-    }
+//    @Override
+//    protected void onPostExecute(String s) {
+//        super.onPostExecute(s);
+//        App.log(TAG, "onPostExecute: " + s);
+//    }
 }

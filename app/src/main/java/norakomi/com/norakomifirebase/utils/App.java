@@ -12,11 +12,11 @@ public class App {
     }
 
     public static void log(String tag, String string) {
-        Log.e(tag, string);
+        Log.e("FirebaseApp:" + tag, string);
     }
 
     public static void logCurrentMethod() {
-        Log.e("App", getCurrentMethodName());
+        Log.e("FirebaseApp", getCurrentMethodName());
     }
 
     public static String getCurrentMethodName() {

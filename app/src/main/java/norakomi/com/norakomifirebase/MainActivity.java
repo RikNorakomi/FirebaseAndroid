@@ -17,9 +17,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import norakomi.com.norakomifirebase.JSoup.ParseUrl;
+import norakomi.com.norakomifirebase.models.SovietArtMePage;
+import norakomi.com.norakomifirebase.models.WebPage;
 import norakomi.com.norakomifirebase.utils.App;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements UrlParsedCallback {
     private final String TAG = getClass().getSimpleName();
 
     /**
@@ -145,5 +147,23 @@ public class MainActivity extends AppCompatActivity {
 ////                }
 ////            });
 //        }).start();
+    }
+
+
+    /**
+     * When a artwork's webPage is parsed we check if data is not already in on fireBase and if
+     * so add the artwork info to our database
+    * */
+    @Override
+    public void onWebPageParsed(WebPage parsedWebPage) {
+        if (parsedWebPage instanceof SovietArtMePage){
+            //todo
+        }
+
+    }
+
+    @Override
+    public void onError(String error) {
+            //todo
     }
 }
