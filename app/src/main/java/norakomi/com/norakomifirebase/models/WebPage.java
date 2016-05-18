@@ -10,4 +10,8 @@ package norakomi.com.norakomifirebase.models;
  */
 public class WebPage {
 
+    protected String url;
+
+    public String getUrl(){return url;}
+
 }

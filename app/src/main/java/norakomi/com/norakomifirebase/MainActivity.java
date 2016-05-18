@@ -12,6 +12,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,10 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
     private TextView resultView;
     private Button button;
     private FirebaseManager firebaseManager;
+    private ParseUrl urlParser;
     private ArrayList<String> urlsToCrawl;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +49,23 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         resultView = (TextView) findViewById(R.id.resultView);
         button = (Button) findViewById(R.id.button);
 
+        // create url parser
+        urlParser = new ParseUrl(new WeakReference<UrlParsedCallback>(this));
+
+        // create FirebaseManager
         firebaseManager = FirebaseManager.getInstance();
         firebaseManager.setContext(this);
         firebaseManager.setFirebaseUrl(Constants.FIREBASE_HOME);
 
+        // create an array of url for crawler to handle
         // test list for storing in firebase
         List<String> testList = Arrays.asList(
-
                 "sovietart.me/posters/all/page1/2",
                 "sovietart.me/posters/all/page1/3",
                 "sovietart.me/posters/all/page1/4",
-                "sovietart.me/posters/all/page1/1");
+                "sovietart.me/posters/all/page1/1"
+        );
+
         urlsToCrawl = new ArrayList<>();
         urlsToCrawl.add(testList.get(0));
         App.log(TAG, "url to crawl = " + urlsToCrawl.get(0));
@@ -80,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         });
     }
 
-
     protected void exampleArrayLike() {
         Firebase julieRef = new Firebase("https://SampleChat.firebaseIO-demo.com/users/julie/");
         julieRef.addValueEventListener(new ValueEventListener() {
@@ -104,13 +113,12 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         });
     }
 
-
     public void buttonClicked(View view) {
         String msg = "button clicked. Trying to load parse test data with JSoup.";
         App.log(TAG, msg);
 
         for (String url : urlsToCrawl) {
-            new ParseUrl().execute(url);
+            urlParser.execute(url);
         }
 
 
@@ -156,14 +164,26 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
     * */
     @Override
     public void onWebPageParsed(WebPage parsedWebPage) {
+        App.log(TAG, "in onWebPageParsed for url: " + parsedWebPage.getUrl());
         if (parsedWebPage instanceof SovietArtMePage){
             //todo
+            App.log(TAG, "onWebPageParsed.callback provided SovietArtMePage object. Setting result to ui.");
+            String msg = resultView.getText() + "\n" +
+                    "title: "+((SovietArtMePage) parsedWebPage).getTitle() + "\n" +
+                    "author: "+((SovietArtMePage) parsedWebPage).getAuthor() + "\n" +
+                    "year: "+((SovietArtMePage) parsedWebPage).getYear() +"\n" +
+                    "category: "+((SovietArtMePage) parsedWebPage).getCategory() +"\n" +
+                    "fileName: "+((SovietArtMePage) parsedWebPage).getImageFileName() + "\n"
+                    ;
+
+            runOnUiThread(() -> resultView.setText(msg));
         }
 
     }
 
     @Override
     public void onError(String error) {
-            //todo
+                    //todo
+        App.log(TAG, "in onError: " + error);
     }
 }
