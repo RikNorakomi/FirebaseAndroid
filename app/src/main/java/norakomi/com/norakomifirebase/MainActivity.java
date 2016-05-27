@@ -1,7 +1,9 @@
 package norakomi.com.norakomifirebase;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +25,17 @@ import norakomi.com.norakomifirebase.models.WebPage;
 import norakomi.com.norakomifirebase.utils.App;
 
 public class MainActivity extends AppCompatActivity implements UrlParsedCallback {
+
+    /**
+     * MainActivity creates a ParseUrl instance to which a weakReference of UrlParsedCallback interface
+     * is given which holds the callback method onWebPageParsed() and onWebPageParsingError() which are
+     * implemented by this activity and respectively handle passing a SovietArtMePage (/WebPage) object
+     * that has information on an artWork (title, year, imageUrl, etc.)
+     *
+     * {@link SovietArtMePage}
+     * {@link WebPage}
+     */
+
     private final String TAG = getClass().getSimpleName();
 
     /**
@@ -37,20 +50,15 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
     private TextView resultView;
     private Button button;
     private FirebaseManager firebaseManager;
-    private ParseUrl urlParser;
     private ArrayList<String> urlsToCrawl;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resultView = (TextView) findViewById(R.id.resultView);
+        resultView.setMovementMethod(new ScrollingMovementMethod());
         button = (Button) findViewById(R.id.button);
-
-        // create url parser
-        urlParser = new ParseUrl(new WeakReference<UrlParsedCallback>(this));
 
         // create FirebaseManager
         firebaseManager = FirebaseManager.getInstance();
@@ -67,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         );
 
         urlsToCrawl = new ArrayList<>();
-        urlsToCrawl.add(testList.get(0));
+        urlsToCrawl.addAll(testList);
         App.log(TAG, "url to crawl = " + urlsToCrawl.get(0));
 
         firebaseManager.writeToFirebase(Constants.childNodePages, testList);
@@ -117,8 +125,10 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         String msg = "button clicked. Trying to load parse test data with JSoup.";
         App.log(TAG, msg);
 
+
         for (String url : urlsToCrawl) {
-            urlParser.execute(url);
+            ParseUrl urlParser = new ParseUrl(new WeakReference<UrlParsedCallback>(this));
+            urlParser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
         }
 
 
@@ -161,29 +171,34 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
     /**
      * When a artwork's webPage is parsed we check if data is not already in on fireBase and if
      * so add the artwork info to our database
-    * */
+     */
     @Override
     public void onWebPageParsed(WebPage parsedWebPage) {
         App.log(TAG, "in onWebPageParsed for url: " + parsedWebPage.getUrl());
-        if (parsedWebPage instanceof SovietArtMePage){
+        if (parsedWebPage instanceof SovietArtMePage) {
             //todo
             App.log(TAG, "onWebPageParsed.callback provided SovietArtMePage object. Setting result to ui.");
-            String msg = resultView.getText() + "\n" +
-                    "title: "+((SovietArtMePage) parsedWebPage).getTitle() + "\n" +
-                    "author: "+((SovietArtMePage) parsedWebPage).getAuthor() + "\n" +
-                    "year: "+((SovietArtMePage) parsedWebPage).getYear() +"\n" +
-                    "category: "+((SovietArtMePage) parsedWebPage).getCategory() +"\n" +
-                    "fileName: "+((SovietArtMePage) parsedWebPage).getImageFileName() + "\n"
-                    ;
+            final String msg = resultView.getText() + "\n" +
+                    "title: " + ((SovietArtMePage) parsedWebPage).getTitle() + "\n" +
+                    "author: " + ((SovietArtMePage) parsedWebPage).getAuthor() + "\n" +
+                    "year: " + ((SovietArtMePage) parsedWebPage).getYear() + "\n" +
+                    "category: " + ((SovietArtMePage) parsedWebPage).getCategory() + "\n" +
+                    "fileName: " + ((SovietArtMePage) parsedWebPage).getImageFileName() + "\n" +
+                    "highRes fileName: " + ((SovietArtMePage) parsedWebPage).getHighResImageUrl() + "\n" +
+                    "imageUrlInfo: " + ((SovietArtMePage) parsedWebPage).getImageUrlInfo() + "\n";
 
-            runOnUiThread(() -> resultView.setText(msg));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    resultView.setText(msg);
+                }
+            });
         }
-
     }
 
     @Override
-    public void onError(String error) {
-                    //todo
-        App.log(TAG, "in onError: " + error);
+    public void onWebPageParsingError(String error) {
+        //todo
+        App.log(TAG, "in onWebPageParsingError: " + error);
     }
 }

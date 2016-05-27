@@ -6,6 +6,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import norakomi.com.norakomifirebase.utils.App;
+
 /**
  * Created by Rik van Velzen, Norakomi.com, on 13-4-2016.
  * <p/>
@@ -16,6 +18,8 @@ import org.jsoup.select.Elements;
  */
 public class SovietArtMeCrawler {
 
+    private final String TAG = getClass().getSimpleName();
+
     private Document doc = null;
 
     private String title = "";
@@ -24,51 +28,70 @@ public class SovietArtMeCrawler {
     private String author = "";
     private String imageUrlInfo = "";
     private String imageFileName = "";
+    private String highResImageUrl = "";
 
     private boolean findTitle = true;
     private boolean findCategory = true;
     private boolean findYear = true;
     private boolean findAuthor = true;
     private boolean findImageInfo = true;
+    private boolean findHighResImageUrl = true;
 
-    public SovietArtMeCrawler() {}
+
+    public SovietArtMeCrawler() {
+    }
 
     /**
      * process() should be called in order for the ArtWorkCrawler to parse through the
      * document and try to find values related to the defined keys.
      * Setting a boolean value pre process call to true or false will include/exclude specific
      * info from the parsed result.
-     *
+     * <p/>
      * Desired values/info can be requested via calls to the getters. E.g.: getTitle, getYear, etc.
-    * */
+     */
     public void process(@NonNull Document doc) {
         this.doc = doc;
-        if (findTitle) findTitle();
-        if (findCategory) findCategory();
-        if (findYear) findYear();
-        if (findAuthor) findAuthor();
-        if (findImageInfo) findImageInfo();
+        if (findTitle)
+            findTitle();
+        if (findCategory)
+            findCategory();
+        if (findYear)
+            findYear();
+        if (findAuthor)
+            findAuthor();
+        if (findImageInfo)
+            findImageInfo();
+        if (findHighResImageUrl)
+            findHighResImageUrl();
     }
 
     /**
-     *  Tries to find a filepath name:
-     *  ImageUrlInfo contains full url (incl. f.e. http:// prefix)
-     *  imageFileName contains file name without the uri scheme prefix
-     * */
+     * Tries to find a filepath name:
+     * ImageUrlInfo contains full url (incl. f.e. http:// prefix)
+     * imageFileName contains file name without the uri scheme prefix
+     */
     private void findImageInfo() {
         Elements img = doc.getElementsByTag("img");
-        for (Element images : img) {
+        for (Element imageTag : img) {
+            if (imageTag.toString().contains("jpg")) {
+                if (imageTag.id().contains("poster") && !imageTag.toString().contains("random")) {
+                    imageUrlInfo = imageTag.attr("src");
 
-            if (images.toString().contains("jpg")
-                    && !images.toString().contains("random")
-                    && images.id().contains("poster")) {
+                    String fullString = imageTag.attr("src");
+                    String delimiter = "/";
+                    String[] tokens = fullString.split(delimiter);
+                    imageFileName = tokens[tokens.length - 1];
+                }
+            }
+        }
+    }
 
-                imageUrlInfo = images.attr("src");
-
-                String fullString = images.attr("src");
-                String delimiter = "/";
-                String[] tokens = fullString.split(delimiter);
-                imageFileName = tokens[tokens.length - 1];
+    private void findHighResImageUrl() {
+        Elements links = doc.getElementsByTag("a");
+        for (Element link : links) {
+            if (link.hasAttr("href") && link.attr("href").contains("print")) {
+                highResImageUrl = link.attr("abs:href");
+                return;
             }
         }
     }
@@ -97,7 +120,9 @@ public class SovietArtMeCrawler {
 
     private void findTitle() {
         Elements title = doc.getElementsByTag("h1");
-        if (title != null) {this.title = title.text();}
+        if (title != null) {
+            this.title = title.text();
+        }
     }
 
     private void findCategory() {
@@ -130,6 +155,7 @@ public class SovietArtMeCrawler {
         this.findImageInfo = findImageInfo;
     }
 
+
     public String getTitle() {
         return title;
     }
@@ -150,5 +176,11 @@ public class SovietArtMeCrawler {
         return imageUrlInfo;
     }
 
-    public String getImageFileName() { return imageFileName; }
+    public String getHighResImageUrl() {
+        return highResImageUrl;
+    }
+
+    public String getImageFileName() {
+        return imageFileName;
+    }
 }

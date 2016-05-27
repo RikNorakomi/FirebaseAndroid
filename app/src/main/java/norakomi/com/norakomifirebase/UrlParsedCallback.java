@@ -12,5 +12,5 @@ import norakomi.com.norakomifirebase.models.WebPage;
  */
 public interface UrlParsedCallback {
     void onWebPageParsed(WebPage parsedWebPage);
-    void onError (String error);
+    void onWebPageParsingError(String error);
 }

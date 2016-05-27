@@ -14,8 +14,9 @@ public class SovietArtMePage extends WebPage {
     private String year;
     private String author;
     private String category;
-    private String imageInfo;
+    private String imageUrlInfo;
     private String imageFileName;
+    private String highResImageUrl;
 
     public void setUrl(String url){
         this.url = url;
@@ -38,11 +39,12 @@ public class SovietArtMePage extends WebPage {
     }
 
     public void setImageUrlInfo(String imageInfo) {
-        this.imageInfo = imageInfo;
+        this.imageUrlInfo = imageInfo;
     }
 
-
     public void setImageFileName(String imageFileName) { this.imageFileName = imageFileName; }
+
+    public void setHighResImageUrl(String highResImageUrl) { this.highResImageUrl = highResImageUrl; }
 
     public String getTitle() {
         return title;
@@ -52,8 +54,12 @@ public class SovietArtMePage extends WebPage {
         return imageFileName;
     }
 
-    public String getImageInfo() {
-        return imageInfo;
+    public String getImageUrlInfo() {
+        return imageUrlInfo;
+    }
+
+    public String getHighResImageUrl() {
+        return highResImageUrl;
     }
 
     public String getYear() {
@@ -71,4 +77,6 @@ public class SovietArtMePage extends WebPage {
     public String getUrl() {
         return url;
     }
+
+
 }

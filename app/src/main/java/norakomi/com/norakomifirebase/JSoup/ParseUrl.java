@@ -51,7 +51,7 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
             if (callbackHandler != null) {
                 UrlParsedCallback callback = callbackHandler.get();
                 if (callback != null) {
-                    callback.onError("Not a valid url");
+                    callback.onWebPageParsingError("Not a valid url");
                 }
             } else {
                 App.log(TAG, "Unable to provide callback. CallbackHandler is null!");
@@ -94,6 +94,7 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
                 sovietArtMePage.setAuthor(crawler.getAuthor());
                 sovietArtMePage.setCategory(crawler.getCategory());
                 sovietArtMePage.setImageUrlInfo(crawler.getImageUrlInfo());
+                sovietArtMePage.setHighResImageUrl(crawler.getHighResImageUrl());
                 sovietArtMePage.setImageFileName(crawler.getImageFileName());
 
                 if (callbackHandler != null) {

@@ -10,31 +10,36 @@
     tools:context="norakomi.com.norakomifirebase.MainActivity">
 
     <TextView
+        android:layout_alignParentTop="true"
         android:id="@+id/helloWorld"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Firebase testDrive" />
 
-    <TextView
-        android:id="@+id/resultView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/helloWorld"
-        android:padding="8dp" />
-
     <Button
         android:id="@+id/button"
+        android:layout_alignParentBottom="true"
         android:onClick="buttonClicked"
         android:layout_marginBottom="24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/resultView"
         android:layout_centerHorizontal="true"
         android:background="@color/colorAccent"
         android:padding="8dp"
         android:textSize="14sp"
         android:textColor="#fff"
         android:text="read url of soviet art me pages" />
+
+    <TextView
+        android:id="@+id/resultView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/helloWorld"
+        android:scrollbars="vertical"
+        android:layout_above="@id/button"
+        android:padding="8dp" />
+
+
 
 
 </RelativeLayout>
