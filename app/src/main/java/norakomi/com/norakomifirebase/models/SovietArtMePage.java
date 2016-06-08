@@ -10,6 +10,7 @@ package norakomi.com.norakomifirebase.models;
  */
 public class SovietArtMePage extends WebPage {
 
+    private int intID;
     private String title;
     private String year;
     private String author;
@@ -17,6 +18,28 @@ public class SovietArtMePage extends WebPage {
     private String imageUrlInfo;
     private String imageFileName;
     private String highResImageUrl;
+
+    public SovietArtMePage() {}
+
+    public SovietArtMePage(int intID,
+                           String title,
+                           String year,
+                           String author,
+                           String category,
+                           String imageUrlInfo,
+                           String imageFileName,
+                           String highResImageUrl) {
+        this.intID = intID;
+        this.title = title;
+        this.year = year;
+        this.author = author;
+        this.category = category;
+        this.imageUrlInfo = imageUrlInfo;
+        this.imageFileName = imageFileName;
+        this.highResImageUrl = highResImageUrl;
+    }
+
+    public void setIntID(int intID){ this.intID = intID;}
 
     public void setUrl(String url){
         this.url = url;
@@ -54,6 +77,10 @@ public class SovietArtMePage extends WebPage {
         return imageFileName;
     }
 
+    public long getIntID() {
+        return intID;
+    }
+
     public String getImageUrlInfo() {
         return imageUrlInfo;
     }
@@ -78,5 +105,17 @@ public class SovietArtMePage extends WebPage {
         return url;
     }
 
-
+    @Override
+    public String toString() {
+        return "SovietArtMePage{" +
+                "intID=" + intID +
+                ", title='" + title + '\'' +
+                ", year='" + year + '\'' +
+                ", author='" + author + '\'' +
+                ", category='" + category + '\'' +
+                ", imageUrlInfo='" + imageUrlInfo + '\'' +
+                ", imageFileName='" + imageFileName + '\'' +
+                ", highResImageUrl='" + highResImageUrl + '\'' +
+                '}';
+    }
 }

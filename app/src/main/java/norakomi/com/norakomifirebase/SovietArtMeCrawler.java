@@ -29,6 +29,7 @@ public class SovietArtMeCrawler {
     private String imageUrlInfo = "";
     private String imageFileName = "";
     private String highResImageUrl = "";
+    private int intId;
 
     private boolean findTitle = true;
     private boolean findCategory = true;
@@ -36,7 +37,7 @@ public class SovietArtMeCrawler {
     private boolean findAuthor = true;
     private boolean findImageInfo = true;
     private boolean findHighResImageUrl = true;
-
+    private boolean createIntId = true;
 
     public SovietArtMeCrawler() {
     }
@@ -63,6 +64,28 @@ public class SovietArtMeCrawler {
             findImageInfo();
         if (findHighResImageUrl)
             findHighResImageUrl();
+        if (createIntId)
+            createIntId();
+
+    }
+
+    private void createIntId() {
+        if (imageFileName.isEmpty()) {
+            App.log(TAG, "Unable to create an id from filename (isEmpty!)");
+            intId = -1;
+            return;
+        }
+        App.log(TAG, "filename to split: " + imageFileName);
+        String id = imageFileName.split("\\.")[0];
+        App.log(TAG, "id string after split = " + id);
+        intId = -2;
+
+
+        try {
+            intId = Integer.parseInt(id);
+        } catch (NumberFormatException nfe) {
+            App.log(TAG, "Couldnt form id: " + id + " into a number");
+        }
     }
 
     /**
@@ -182,5 +205,9 @@ public class SovietArtMeCrawler {
 
     public String getImageFileName() {
         return imageFileName;
+    }
+
+    public int getIntId() {
+        return intId;
     }
 }

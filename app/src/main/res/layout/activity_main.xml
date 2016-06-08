@@ -1,45 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="norakomi.com.norakomifirebase.MainActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context="norakomi.com.norakomifirebase.MainActivity">
 
     <TextView
-        android:layout_alignParentTop="true"
         android:id="@+id/helloWorld"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Firebase testDrive" />
+        android:layout_alignParentTop="true"
+        android:text="Firebase testDrive"/>
 
     <Button
-        android:id="@+id/button"
-        android:layout_alignParentBottom="true"
-        android:onClick="buttonClicked"
-        android:layout_marginBottom="24dp"
+        android:id="@+id/buttonSendDataToFirebase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonCrawl"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:background="@color/colorAccent"
+        android:onClick="buttonSendDataToFirebase"
+        android:padding="8dp"
+        android:text="send data to firebase"
+        android:textColor="#fff"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/buttonCrawl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonReadJson"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:background="@color/colorAccent"
+        android:onClick="buttonCrawlPagesClicked"
+        android:padding="8dp"
+        android:text="read url of soviet art me pages"
+        android:textColor="#fff"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/buttonReadJson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/colorAccent"
+        android:onClick="buttonReadJsonClicked"
         android:padding="8dp"
-        android:textSize="14sp"
+        android:text="Read JSON url pages"
         android:textColor="#fff"
-        android:text="read url of soviet art me pages" />
+        android:textSize="14sp"/>
 
     <TextView
         android:id="@+id/resultView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/buttonCrawl"
         android:layout_below="@id/helloWorld"
-        android:scrollbars="vertical"
-        android:layout_above="@id/button"
-        android:padding="8dp" />
-
-
+        android:padding="8dp"
+        android:scrollbars="vertical"/>
 
 
 </RelativeLayout>

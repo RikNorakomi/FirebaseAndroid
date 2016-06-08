@@ -71,10 +71,11 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
             App.log(TAG, "trying to add scheme to url. New url: " + url);
         }
 
+        Document doc = null;
 
         try {
             App.log(TAG, "Trying to connecting to: " + url);
-            Document doc = Jsoup.connect(url).get();
+            doc = Jsoup.connect(url).get();
 
             if (doc == null) {
                 /*
@@ -84,27 +85,7 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
                 App.log(TAG, "Error: Unable to get a Document from url: " + url);
                 return buffer.toString();
             } else {
-                SovietArtMeCrawler crawler = new SovietArtMeCrawler();
-                crawler.process(doc);
 
-                SovietArtMePage sovietArtMePage = new SovietArtMePage();
-                sovietArtMePage.setUrl(url);
-                sovietArtMePage.setTitle(crawler.getTitle());
-                sovietArtMePage.setYear(crawler.getYear());
-                sovietArtMePage.setAuthor(crawler.getAuthor());
-                sovietArtMePage.setCategory(crawler.getCategory());
-                sovietArtMePage.setImageUrlInfo(crawler.getImageUrlInfo());
-                sovietArtMePage.setHighResImageUrl(crawler.getHighResImageUrl());
-                sovietArtMePage.setImageFileName(crawler.getImageFileName());
-
-                if (callbackHandler != null) {
-                    UrlParsedCallback callback = callbackHandler.get();
-                    if (callback != null) {
-                        callback.onWebPageParsed(sovietArtMePage);
-                    }
-                } else {
-                    App.log(TAG, "Unable to provide callback. CallbackHandler is null!");
-                }
             }
 
 //            // todo remove test code below and see what to do with on postExecute
@@ -134,6 +115,29 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
 
         } catch (Throwable t) {
             App.log(TAG, "Error: Caught throwable: " + t.toString());
+        }
+
+        SovietArtMeCrawler crawler = new SovietArtMeCrawler();
+        crawler.process(doc);
+
+        SovietArtMePage sovietArtMePage = new SovietArtMePage();
+        sovietArtMePage.setUrl(url);
+        sovietArtMePage.setTitle(crawler.getTitle());
+        sovietArtMePage.setYear(crawler.getYear());
+        sovietArtMePage.setAuthor(crawler.getAuthor());
+        sovietArtMePage.setCategory(crawler.getCategory());
+        sovietArtMePage.setImageUrlInfo(crawler.getImageUrlInfo());
+        sovietArtMePage.setHighResImageUrl(crawler.getHighResImageUrl());
+        sovietArtMePage.setImageFileName(crawler.getImageFileName());
+        sovietArtMePage.setIntID(crawler.getIntId());
+
+        if (callbackHandler != null) {
+            UrlParsedCallback callback = callbackHandler.get();
+            if (callback != null) {
+                callback.onWebPageParsed(sovietArtMePage);
+            }
+        } else {
+            App.log(TAG, "Unable to provide callback. CallbackHandler is null!");
         }
 
         return buffer.toString();

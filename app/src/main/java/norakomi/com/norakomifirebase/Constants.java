@@ -10,6 +10,7 @@ public class Constants {
 
     // fire base object nodes
     public static final String childNodePages = "soviet_art_me_pages";
+    public static final String childNodePosters = "soviet_art_me_posters";
 
 
     /* JSON URLs*/

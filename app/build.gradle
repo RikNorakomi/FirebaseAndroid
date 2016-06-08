@@ -58,4 +58,8 @@ dependencies {
     // retrofit
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+
+
+    // volley
+    compile 'com.mcxiaoke.volley:library:1.0.19'
 }
