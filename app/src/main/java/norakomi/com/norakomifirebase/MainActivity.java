@@ -9,9 +9,11 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.firebase.client.Query;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +21,6 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import norakomi.com.norakomifirebase.JSoup.ParseUrl;
 import norakomi.com.norakomifirebase.models.SovietArtMePage;
@@ -41,13 +41,14 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
      */
 
     private final String TAG = getClass().getSimpleName();
+    private final String FIREBASE_POSTERS_NODE = "posters";
 
     /**
      * Firebase documentation:
      * <p/>
      * https://www.firebase.com/docs/android/quickstart.html
      * https://www.firebase.com/docs/android/guide/understanding-data.html
-     * Firebase en arrays: https://www.firebase.com/blog/2014-04-28-best-practices-arrays-in-firebase.html
+     * Firebase and arrays: https://www.firebase.com/blog/2014-04-28-best-practices-arrays-in-firebase.html
      */
 
 
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SovietArtMeCrawler.processedIDs.clear();
+
         setContentView(R.layout.activity_main);
         resultView = (TextView) findViewById(R.id.resultView);
 //        resultView.setMovementMethod(new ScrollingMovementMethod());
@@ -75,51 +78,96 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
 
         // create an array of url for crawler to handle
         // test list for storing in firebase
-        List<String> testList = Arrays.asList(
-                "sovietart.me/posters/all/page1/2",
-                "sovietart.me/posters/all/page1/3",
-                "sovietart.me/posters/all/page1/4",
-                "sovietart.me/posters/all/page1/1"
-        );
+//        List<String> testList = Arrays.asList(
+//                "sovietart.me/posters/all/page1/2",
+//                "sovietart.me/posters/all/page1/3",
+//                "sovietart.me/posters/all/page1/4",
+//                "sovietart.me/posters/all/page1/1"
+//        );
 
         urlsToCrawl = new ArrayList<>();
-        urlsToCrawl.addAll(testList);
-        App.log(TAG, "url to crawl = " + urlsToCrawl.get(0));
+//        urlsToCrawl.addAll(testList);
+//        App.log(TAG, "url to crawl = " + urlsToCrawl.get(0));
 
-        firebaseManager.writeToFirebase(Constants.childNodePages, testList);
-        firebaseManager.readFromFirebase(Constants.childNodePages, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String resultText = "Received data from " + Constants.childNodePages + ": " + dataSnapshot.toString();
-                App.log(TAG, resultText);
-                if (resultView != null) {
-                    resultView.setText(resultText);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                App.log(TAG, "could get data from firebase: firebaseError=" + firebaseError.toString());
-                App.log(TAG, "Error details:" + firebaseError.getDetails());
-
-            }
-        });
+//        firebaseManager.writeToFirebase(Constants.childNodePages, testList);
+//        firebaseManager.readFromFirebase(Constants.childNodePages, new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                String resultText = "Received data from " + Constants.childNodePages + ": " + dataSnapshot.toString();
+//                App.log(TAG, resultText);
+//                if (resultView != null) {
+//                    resultView.setText(resultText);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                App.log(TAG, "could get data from firebase: firebaseError=" + firebaseError.toString());
+//                App.log(TAG, "Error details:" + firebaseError.getDetails());
+//
+//            }
+//        });
     }
 
     public void buttonSendDataToFirebase(View view) {
         App.log(TAG, "firebase test");
         firebaseManager.writeToFirebaseTest(sovietArtMePagesArray);
+    }
 
-//        App.log(TAG, "in buttonSendDataToFirebase");
-//        if (sovietArtMePagesArray.isEmpty()) {
-//            Toast.makeText(this, "Currently no crawled pages collected", Toast.LENGTH_LONG).show();
-//            return;
-//        }
+    /*
+    * Example of how to query firebase
+    * */
+    public void buttonReadPosterDataFromFirebase(View view) {
+        Firebase reference = new Firebase(Constants.FIREBASE_HOME_POSTERS);
+        Query queryRef = reference.orderByChild("intID");
+        queryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                SovietArtMePage page = dataSnapshot.getValue(SovietArtMePage.class);
+                App.log(TAG, "pageID: " + page.getIntID());
+                App.log(TAG, page.toString());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+//        firebaseManager.readFromFirebase(FIREBASE_POSTERS_NODE, new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                App.log(TAG, "Data changed on: " + FIREBASE_POSTERS_NODE + "\n" +
+//                        " " + dataSnapshot.getValue());
+//                List<SovietArtMePage> posters = (List<SovietArtMePage>) dataSnapshot.getValue(SovietArtMePage.class);
+//                App.log(TAG, "poster# = " + posters.size());
+////                for (SovietArtMePage poster : posters) {
+//                    App.log(TAG, "" + posters.get(1).toString());
+////
+////                }
 //
-//        for (SovietArtMePage s: sovietArtMePagesArray   ) {
-//            App.log(TAG, "writing Page to Firebase: " + s.toString());
-//            firebaseManager.writeToFirebase(Constants.childNodePosters, (int) s.getIntID(), s);
-//        }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                App.log(TAG, "in onCancelled: firebase Error.");
+//            }
+//        });
     }
 
     public void buttonCrawlPagesClicked(View view) {
@@ -127,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         App.log(TAG, msg);
         resultView.setText(msg);
 
-        int maxUrls = 10;
+        int maxUrls = urlsToCrawl.size();
         for (int i = 0; i < maxUrls; i++) {
             ParseUrl urlParser = new ParseUrl(new WeakReference<UrlParsedCallback>(this));
             urlParser.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, urlsToCrawl.get(i));
@@ -221,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements UrlParsedCallback
         App.log(TAG, errorMsg);
         resultView.setText(errorMsg);
     }
+
 
     //End region volley callback methods
 }

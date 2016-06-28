@@ -6,6 +6,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import norakomi.com.norakomifirebase.utils.App;
 
 /**
@@ -38,6 +41,9 @@ public class SovietArtMeCrawler {
     private boolean findImageInfo = true;
     private boolean findHighResImageUrl = true;
     private boolean createIntId = true;
+    private boolean artworkAlreadyProcessed = false;
+
+    public static Set<Integer> processedIDs = new HashSet<>();
 
     public SovietArtMeCrawler() {
     }
@@ -52,6 +58,19 @@ public class SovietArtMeCrawler {
      */
     public void process(@NonNull Document doc) {
         this.doc = doc;
+        if (findImageInfo)
+            findImageInfo(); // image info needs to be gotten before(!) getting int ID because id dependant on filename!
+        if (createIntId)
+            createIntId();
+        if (processedIDs.contains(intId)) {
+            App.log(TAG, "already parsed an art object with intId: " + intId + " going to next page and cancelling parse.");
+            artworkAlreadyProcessed = true;
+            return;
+        } else {
+            processedIDs.add(intId);
+        }
+
+
         if (findTitle)
             findTitle();
         if (findCategory)
@@ -60,12 +79,10 @@ public class SovietArtMeCrawler {
             findYear();
         if (findAuthor)
             findAuthor();
-        if (findImageInfo)
-            findImageInfo();
+
         if (findHighResImageUrl)
             findHighResImageUrl();
-        if (createIntId)
-            createIntId();
+
 
     }
 
@@ -209,5 +226,9 @@ public class SovietArtMeCrawler {
 
     public int getIntId() {
         return intId;
+    }
+
+    public boolean isArtworkAlreadyProcessed() {
+        return artworkAlreadyProcessed;
     }
 }

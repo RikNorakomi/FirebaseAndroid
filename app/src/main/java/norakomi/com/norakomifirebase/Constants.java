@@ -5,7 +5,8 @@ package norakomi.com.norakomifirebase;
  */
 public class Constants {
 
-    public static final String FIREBASE_HOME = "https://dazzling-inferno-8912.firebaseio.com/";
+    public static final String FIREBASE_HOME = "https://dazzling-inferno-8912.firebaseio.com";
+    public static final String FIREBASE_HOME_POSTERS = "https://dazzling-inferno-8912.firebaseio.com/posters";
     public static final String FIREBASE_BASE_PATH = "dazzling-inferno-8912";
 
     // fire base object nodes

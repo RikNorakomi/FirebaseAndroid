@@ -120,24 +120,39 @@ public class ParseUrl extends AsyncTask<String, Void, String> {
         SovietArtMeCrawler crawler = new SovietArtMeCrawler();
         crawler.process(doc);
 
-        SovietArtMePage sovietArtMePage = new SovietArtMePage();
-        sovietArtMePage.setUrl(url);
-        sovietArtMePage.setTitle(crawler.getTitle());
-        sovietArtMePage.setYear(crawler.getYear());
-        sovietArtMePage.setAuthor(crawler.getAuthor());
-        sovietArtMePage.setCategory(crawler.getCategory());
-        sovietArtMePage.setImageUrlInfo(crawler.getImageUrlInfo());
-        sovietArtMePage.setHighResImageUrl(crawler.getHighResImageUrl());
-        sovietArtMePage.setImageFileName(crawler.getImageFileName());
-        sovietArtMePage.setIntID(crawler.getIntId());
 
-        if (callbackHandler != null) {
+        SovietArtMePage sovietArtMePage = new SovietArtMePage();
+
+        /*
+        * Check if artWork has already been parsed on different Url and if so skip
+        * */
+        if (crawler.isArtworkAlreadyProcessed()) {
             UrlParsedCallback callback = callbackHandler.get();
             if (callback != null) {
-                callback.onWebPageParsed(sovietArtMePage);
+                callback.onWebPageParsingError("Artwork with Id already parsed for url: " + url);
             }
         } else {
-            App.log(TAG, "Unable to provide callback. CallbackHandler is null!");
+            /*
+            * If artWork is unique get parsed information and return sovietArtMePage object
+            * */
+            sovietArtMePage.setUrl(url);
+            sovietArtMePage.setTitle(crawler.getTitle());
+            sovietArtMePage.setYear(crawler.getYear());
+            sovietArtMePage.setAuthor(crawler.getAuthor());
+            sovietArtMePage.setCategory(crawler.getCategory());
+            sovietArtMePage.setImageUrlInfo(crawler.getImageUrlInfo());
+            sovietArtMePage.setHighResImageUrl(crawler.getHighResImageUrl());
+            sovietArtMePage.setImageFileName(crawler.getImageFileName());
+            sovietArtMePage.setIntID(crawler.getIntId());
+
+            if (callbackHandler != null) {
+                UrlParsedCallback callback = callbackHandler.get();
+                if (callback != null) {
+                    callback.onWebPageParsed(sovietArtMePage);
+                }
+            } else {
+                App.log(TAG, "Unable to provide callback. CallbackHandler is null!");
+            }
         }
 
         return buffer.toString();

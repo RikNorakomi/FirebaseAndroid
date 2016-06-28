@@ -17,6 +17,20 @@
         android:text="Firebase testDrive"/>
 
     <Button
+        android:id="@+id/buttonReadPosterDataFromFirebase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonSendDataToFirebase"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:background="@color/colorAccent"
+        android:onClick="buttonReadPosterDataFromFirebase"
+        android:padding="8dp"
+        android:text="read data from firebase"
+        android:textColor="#fff"
+        android:textSize="14sp"/>
+
+    <Button
         android:id="@+id/buttonSendDataToFirebase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

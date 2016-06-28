@@ -38,6 +38,8 @@ public class FirebaseManager {
         return instance;
     }
 
+    public Firebase getFirebaseReference(){return firebaseReference;}
+
     public void writeToFirebase(@NonNull String childNode, @NonNull Object firebaseObject) {
         if (firebaseReference == null) {
             App.log(TAG, "Error.firebase refenerence is null! First call setFirebaseUrl() to create a reference to your database");
@@ -81,8 +83,8 @@ public class FirebaseManager {
 //        firebaseReference.child(childNode).setValue(firebaseObject);
     }
 
-    public void readFromFirebase(String childNode, ValueEventListener responseListener) {
-        firebaseReference.child(childNode).addValueEventListener(responseListener);
+    public void readFromFirebase(String childNode, ValueEventListener valueEventListener) {
+        firebaseReference.child(childNode).addValueEventListener(valueEventListener);
     }
 
     /**
